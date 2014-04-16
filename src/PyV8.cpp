@@ -9,7 +9,7 @@
   #include "AST.h"
 #endif
 
-BOOST_PYTHON_MODULE(_PyV8)
+BOOST_PYTHON_MODULE(_v8)
 {
   CJavascriptException::Expose();
   CWrapper::Expose(); 

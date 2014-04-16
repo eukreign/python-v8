@@ -28,15 +28,11 @@ if is_cygwin or is_mingw:
     print("ERROR: Cygwin or MingGW is not official support, please try to use Visual Studio 2010 Express or later.")
     sys.exit(-1)
 
-import ez_setup
-ez_setup.use_setuptools()
-
 from distutils.command.build import build as _build
-from setuptools import setup, Extension
+from setuptools import setup, Extension, Command, find_packages
 from setuptools.command.develop import develop as _develop
+from setuptools.command.test import test as TestCommand
 
-# default settings, you can modify it in buildconf.py.
-# please look in buildconf.py.example for more information
 PYV8_HOME = os.path.abspath(os.path.dirname(__file__))
 BOOST_HOME = None
 BOOST_MT = is_osx
@@ -75,11 +71,6 @@ V8_STRICTALIASING = True        # enable strict aliasing
 V8_BACKTRACE = True
 V8_I18N = False
 
-# load defaults from config file
-try:
-    from buildconf import *
-except ImportError:
-    pass
 
 # override defaults from environment
 PYV8_HOME = os.environ.get('PYV8_HOME', PYV8_HOME)
@@ -578,7 +569,7 @@ class develop(_develop):
 
         _develop.run(self)
 
-pyv8 = Extension(name="_PyV8",
+pyv8 = Extension(name="_v8",
                  sources=[os.path.join("src", file) for file in source_files],
                  define_macros=macros,
                  include_dirs=include_dirs,
@@ -596,45 +587,50 @@ if is_py3k:
         'use_2to3': True
     })
 
-classifiers = [
-    'Development Status :: 4 - Beta',
-    'Environment :: Plugins',
-    'Intended Audience :: Developers',
-    'Intended Audience :: System Administrators',
-    'License :: OSI Approved :: Apache Software License',
-    'Natural Language :: English',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Programming Language :: C++',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Topic :: Internet',
-    'Topic :: Internet :: WWW/HTTP',
-    'Topic :: Software Development',
-    'Topic :: Software Development :: Libraries :: Python Modules',
-    'Topic :: Utilities',
-    ]
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+    def run_tests(self):
+        import pytest
+        errno = pytest.main(self.test_args)
+        raise SystemExit(errno)
 
-description = """
-PyV8 is a python wrapper for Google V8 engine, it act as a bridge
-between the Python and JavaScript objects, and support to hosting
-Google's v8 engine in a python script.
-"""
-
-setup(name='PyV8',
-      cmdclass = { 'build': build, 'v8build': _build, 'develop': develop },
-      version='1.0-dev',
-      description='Python Wrapper for Google V8 Engine',
-      long_description=description,
-      platforms="x86",
-      author='Flier Lu',
-      author_email='flier.lu@gmail.com',
-      url='svn+http://pyv8.googlecode.com/svn/trunk/#egg=pyv8-1.0-dev',
-      download_url='http://code.google.com/p/pyv8/downloads/list',
-      license="Apache Software License",
-      install_requires=['setuptools'],
-      py_modules=['PyV8'],
-      ext_modules=[pyv8],
-      test_suite='PyV8',
-      classifiers=classifiers,
-      **extra)
+setup(
+    name="v8",
+    version="0.1.0",
+    description="Python Wrapper for Google V8 Engine",
+    author="Lex Berezhny",
+    author_email="lex@damoti.com",
+    url="http://github.com/damoti/python-v8",
+    license="Apache Software License",
+    platforms=["linux", "osx", "cygwin", "win32"],
+    packages=find_packages(),
+    include_package_data=True,
+    tests_require=['pytest'],
+    ext_modules=[pyv8],
+    cmdclass = {
+        "build": build,
+        "v8build": _build,
+        "develop": develop
+    },
+    classifiers = [
+        "Programming Language :: C++",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Environment :: Plugins",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Software Development",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Utilities",
+    ],
+    keywords = "js javascript v8",
+    **extra
+)
