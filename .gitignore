@@ -5,8 +5,11 @@ __pycache__/
 
 # Distribution / packaging
 dist/
+deb_dist/
 build/
+libv8/
 *.egg-info/
+v8-*.tar.gz
 
 # Unit test / coverage reports
 htmlcov/

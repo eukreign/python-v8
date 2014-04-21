@@ -3,9 +3,9 @@ python:
   - 2.7
 
 install:
-  - sudo apt-get install libboost-python-dev libboost-thread-dev libboost-system-dev
-  - sudo apt-get install systemtap-sdt-dev
-  - pip install -e .
+  - sudo apt-get install gdebi-core
+  - make builddeb
+  - sudo gdebi -n deb_dist/python-v8*.deb
   - pip install -r requirements.pip
 
 script:

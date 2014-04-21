@@ -1,3 +1,16 @@
 include AUTHORS
 include LICENSE
-recursive-include src *.h *.vcproj
+include libv8/Makefile
+include libv8/build/*
+include libv8/tools/*
+include libv8/tools/gyp/*
+recursive-include src *
+recursive-include libv8/src *
+recursive-include libv8/include *
+recursive-include libv8/samples *
+recursive-include libv8/test/cctest *
+recursive-include libv8/build/gyp *
+recursive-exclude libv8/build/gyp/buildbot *
+recursive-exclude libv8/build/gyp/samples *
+recursive-exclude libv8/build/gyp/test *
+recursive-exclude libv8/build/gyp/tools *
