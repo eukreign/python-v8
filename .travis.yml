@@ -3,7 +3,8 @@ python:
   - 2.7
 
 install:
-  - sudo apt-get install gdebi-core
+  - sudo apt-get install gdebi-core python-setuptools python-all-dev python-support
+  - sudo apt-get install libboost-python-dev libboost-thread-dev libboost-system-dev
   - make builddeb
   - sudo gdebi -n deb_dist/python-v8*.deb
   - pip install -r requirements.pip

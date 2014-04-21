@@ -311,7 +311,7 @@ class PyTest(TestCommand):
 
 setup(
     name="v8",
-    version="0.1.4",
+    version="0.1.5",
     description="Python Wrapper for Google V8 Engine",
     author="Lex Berezhny",
     author_email="lex@damoti.com",
